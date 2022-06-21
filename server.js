@@ -37,6 +37,7 @@
   app.use(deviceCheckMiddleware);
   app.use((err, req, res, next) => {
     res.status(400).json({
+      error: true,
       status: false,
       code: 400,
       message: err.message,
