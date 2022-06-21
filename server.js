@@ -50,6 +50,8 @@
     if (headers['user-agent'] === 'arduino-WebSocket-Client' || headers.host !== `${HOST}:${PORT}`) {
       next(new Error("Socket authentication error"));
     }
+
+    next();
   });
 
   app.post('/open-gate/:option', (req, res) => {
