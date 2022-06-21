@@ -9,7 +9,7 @@
   const TelegramBot = require('node-telegram-bot-api');
   const doppler = require('./doppler-secrets');
 
-  const { TELEGRAM_TOKEN, PORT } = await doppler.getSecrets();
+  const { TELEGRAM_TOKEN, PORT, HOST } = await doppler.getSecrets();
 
   const bot = new TelegramBot(TELEGRAM_TOKEN, {polling: true});
 
@@ -43,6 +43,14 @@
     });
   })
 
+
+  io.use((socket, next) => {
+    const { headers } = socket.handshake;
+
+    if (headers['user-agent'] === 'arduino-WebSocket-Client' || headers.host !== `${HOST}:${PORT}`) {
+      next(new Error("Socket authentication error"));
+    }
+  });
 
   app.post('/open-gate/:option', (req, res) => {
     const { option } = req.params;
