@@ -81,11 +81,11 @@
     const chatId = msg.chat.id;
 
     switch (msg.text) {
-      case '🏃‍♂️ Open for a vehicle':
+      case '🏃‍♂️ Open for a human being':
         io.sockets.emit('openForHuman');
         break;
 
-      case '🚘 Open for a human being':
+      case '🚘 Open for a vehicle':
         io.sockets.emit('openForAuto');
         break;
 
