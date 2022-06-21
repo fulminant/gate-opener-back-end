@@ -49,11 +49,11 @@
     
     switch (option) {
       case 'human':
-        // io.sockets.emit('openForHuman');
+        io.sockets.emit('openForHuman');
         break;
 
       case 'vehicle':
-        // io.sockets.emit('openForAuto');
+        io.sockets.emit('openForAuto');
         break;
 
       default:
@@ -70,15 +70,17 @@
   bot.on('message', (msg) => {
     const chatId = msg.chat.id;
 
-    console.log(msg, 'modl');
-
     switch (msg.text) {
-      case '🏃‍♂️ For a human being':
+      case '🏃‍♂️ Open for a vehicle':
         io.sockets.emit('openForHuman');
         break;
 
-      case '🚘 For a vehicle':
+      case '🚘 Open for a human being':
         io.sockets.emit('openForAuto');
+        break;
+
+      case 'Cancel':
+        bot.deleteMessage(chatId, msg.message_id);
         break;
 
       default:
@@ -88,21 +90,16 @@
     
 
     if (msg.entities && msg.entities.some(({type}) => type === 'bot_command')) {
-      if (msg.text.includes('/start') || msg.text.includes('/toggle_auto')) {
+      if (msg.text.includes('/start')) {
         bot.sendMessage(chatId, 'How you would like to open gate?', {reply_markup: {
           one_time_keyboard: true,
           keyboard: [
-                  [{
-                          text: "🚘 For a vehicle",
-                          callback_data: 'dog'
-                      },
-                      {
-                          text: "🏃‍♂️ For a human being",
-                          callback_data: 'cat'
-                      }
-                  ],
-                  ["Cancel"]
-              ]
+            [
+              { text: "🚘 Open for a vehicle" },
+              { text: "🏃‍♂️ Open for a human being" }
+            ],
+            ["Cancel"]
+          ]
         }});      
       }
     } 
