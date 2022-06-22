@@ -9,7 +9,7 @@
   const TelegramBot = require('node-telegram-bot-api');
   const doppler = require('./doppler-secrets');
 
-  const { TELEGRAM_TOKEN, PORT, HOST } = await doppler.getSecrets();
+  const { TELEGRAM_TOKEN, PORT, HOST, PRIVATE_CHAT } = await doppler.getSecrets();
 
   const bot = new TelegramBot(TELEGRAM_TOKEN, {polling: true});
 
@@ -28,6 +28,10 @@
     }
 
     if (!devicesList.includes(device)) {
+      if (req.url.includes('new-device-register')) {
+        bot.sendMessage(PRIVATE_CHAT, `New device: ${device}`);
+      }
+
       throw new Error('Your device unauthorized.');
     }
 
@@ -76,43 +80,4 @@
   })
 
   server.listen(PORT);
-
-
-  bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
-
-    switch (msg.text) {
-      case '🏃‍♂️ Open for a human being':
-        io.sockets.emit('openForHuman');
-        break;
-
-      case '🚘 Open for a vehicle':
-        io.sockets.emit('openForAuto');
-        break;
-
-      case 'Cancel':
-        bot.deleteMessage(chatId, msg.message_id);
-        break;
-
-      default:
-        io.sockets.emit('blinkLED');
-        break;      
-    }
-    
-
-    if (msg.entities && msg.entities.some(({type}) => type === 'bot_command')) {
-      if (msg.text.includes('/start')) {
-        bot.sendMessage(chatId, 'How you would like to open gate?', {reply_markup: {
-          one_time_keyboard: true,
-          keyboard: [
-            [
-              { text: "🚘 Open for a vehicle" },
-              { text: "🏃‍♂️ Open for a human being" }
-            ],
-            ["Cancel"]
-          ]
-        }});      
-      }
-    } 
-  });
 })();
