@@ -29,7 +29,11 @@
 
     if (!devicesList.includes(device)) {
       if (req.url.includes('new-device-register')) {
-        bot.sendMessage(PRIVATE_CHAT, `New device: ${device}`);
+
+        let buff = new Buffer(device, 'base64');
+        let deviceName = buff.toString('utf-8');
+
+        bot.sendMessage(PRIVATE_CHAT, `New device: ${deviceName}, ${device}`);
       }
 
       throw new Error('Your device unauthorized.');
